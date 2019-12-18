@@ -192,16 +192,24 @@ externaldata<-function(){
       
       download.file(paste0(durl(),'&pid=',filename()[1]),paste0(vals$Data,'/',filename2(),filetype()),method = "curl")
       
-      commands<-paste0('certutil -hashfile ',paste0('"',vals$Data,'/',filename2(),filetype(),'"',' MD5'),' ','> ',paste0('"',vals$Data,'/',filename2(),'-','md5.log','"'))
+      commands<-paste0('certutil -hashfile ',paste0('"',vals$Data,'/',filename2(),filetype(),'"',' MD5'),' ','> ',paste0('"',vals$Data,'/',filename2(),'-','md5.txt','"'))
       
       shell(commands)
       
-      con<-file(paste0(vals$Data,'/',filename2(),'-','md5.log'))
+      con<-file(paste0(vals$Data,'/',filename2(),'-','md5.txt'))
       
       mdline<-readLines(con,n=-1)
       
       rmd$Data <- mdline[2]
-      
+      dmd5<-paste0("下载文件MD5：",mdline[2])
+      smd5<-paste0("服务器端文件MD5：",inputmd5())
+      pid<-paste0("项目编号：",filename()[3])
+      fid<-paste0("文件类型: ",filename()[2])
+      dname<-paste0("文件名：",filename2())
+      uname<-paste0("下载ID：",inputusername())
+      ti<-paste0("下载时间: ",Sys.time())
+      t<-c(dmd5,smd5,pid,fid,dname,uname,ti)
+      writeLines(t,con,sep="\n")
       close(con)
       
     }
@@ -217,6 +225,18 @@ externaldata<-function(){
         imd5 <- input$md5input
         
         imd5
+        
+      }
+      
+    })
+    
+    inputusername<-reactive({
+      
+      if(!is.null(input$username)){
+        
+        iuser <- input$username
+        
+        iuser
         
       }
       
